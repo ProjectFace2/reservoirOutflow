@@ -1,8 +1,4 @@
 #!/usr/bin/env python
-# coding: utf-8
-
-# In[18]:
-
 import pandas as pd
 import numpy as np
 import pickle
@@ -12,13 +8,6 @@ warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 from LocallyWeighted import series_to_supervised
 from tensorflow.keras.models import load_model
-# import fbprophet as fb
-# from LocallyWeighted import LocallyWeightedRegression
-# from sklearn.preprocessing import MinMaxScaler
-# from tensorflow.keras.models import Sequential
-# from tensorflow.keras.layers import Dense
-# from tensorflow.keras.layers import LSTM
-
 
 class EnsembledRegression:
     def __init__(self, startDate, endDate = None):
@@ -49,7 +38,7 @@ class EnsembledRegression:
         scaledInput = pd.DataFrame({'Inflow':scaled[:,0],'MADIKERI':scaled[:,1],'SOMWARPET':scaled[:,2],'VIRAJPET':scaled[:,3]})
         return series_to_supervised(np.vstack((scaledInput.values,np.zeros(4))),9,0)
 
-    def getLevelAndStorage(self, date):
+    def getLevelAndStorage(self, date, second):
         inputFrame = pd.read_csv('./Datasets/nineYearHarangi.csv', header=0, parse_dates=True,
                                  index_col=0)
 
@@ -62,7 +51,9 @@ class EnsembledRegression:
         unScaledinputSet = inputFrame.loc[startdate:enddate].copy()
         dataset = unScaledinputSet.iloc[:, :4]
         number = series_to_supervised(np.vstack((dataset.values, np.zeros(4))), 2, 0)
-        return np.concatenate((self.modelLevel.predict(number.values), self.modelStorage.predict(number.values)),
+
+        numberInput = np.concatenate((number.values, second), axis=1)
+        return np.concatenate((self.modelLevel.predict(numberInput), self.modelStorage.predict(numberInput)),
                               axis=1)
 
     def sense_val_inflow(self, x):
@@ -92,20 +83,20 @@ class EnsembledRegression:
         elif((startDate is not None)):
             self.__init__(startDate)
         self.queryset = self.prepareSet(self.predictionDate)
-        self.levelandstorage = self.getLevelAndStorage(self.predictionDate)
+
         # lstm prediction
         self.n_hours = 9
         self.n_features = 4
-        test_x=self.queryset.values
+        test_x = self.queryset.values
         lstm_test_X = test_x.reshape((test_x.shape[0], self.n_hours, self.n_features))
         # with open('/home/kishora/Documents/models/lstmInf_forecast_model_lag9.pckl', 'rb') as fin:
         #     lstm_lag9_model = pickle.load(fin)
-        lstm_lag9_model=load_model('./models/lstmTensorInf_forecast_model_lag9.h5')
-        lstm_inv_yhat=lstm_lag9_model.predict(lstm_test_X)
-        test_X = lstm_test_X.reshape((lstm_test_X.shape[0], self.n_hours*self.n_features))
+        lstm_lag9_model = load_model('./models/lstmTensorInf_forecast_model_lag9.h5')
+        lstm_inv_yhat = lstm_lag9_model.predict(lstm_test_X)
+        test_X = lstm_test_X.reshape((lstm_test_X.shape[0], self.n_hours * self.n_features))
         inv_yhatx = concatenate((lstm_inv_yhat, test_X[:, -3:]), axis=1)
         inv_yhaty = self.scaler.inverse_transform(inv_yhatx)
-        self.lstm_res = inv_yhaty[:,0]
+        self.lstm_res = inv_yhaty[:, 0]
 
         # fb prophet prediction
         fb_test=self.queryset.copy()
@@ -132,22 +123,28 @@ class EnsembledRegression:
         self.inp['lwr']=self.lwr_res
         with open('./models/ensembled_forecast_model_lag9.pckl', 'rb') as fin:
             en_lag9_model = pickle.load(fin)
-        self.predictions=pd.DataFrame()
-        self.predictions['lower']=en_lag9_model[0].predict(self.inp[['lstm','proph','lwr']])
-        self.predictions['result']=en_lag9_model[1].predict(self.inp[['lstm','proph','lwr']])
-        self.predictions['upper']=en_lag9_model[2].predict(self.inp[['lstm','proph','lwr']])
-        
-        self.predictions['lowLabel']=self.predictions.lower.apply(self.sense_val_inflow)
-        self.predictions['resultlabel']=self.predictions.result.apply(self.sense_val_inflow)
-        self.predictions['uplabel']=self.predictions.upper.apply(self.sense_val_inflow)
-        self.predictions['level(ft)'] =self.levelandstorage[:,0]
-        self.predictions['storage(tmc)'] =self.levelandstorage[:,1]
-        self.predictions['Dates']=self.predictionDate
-        self.predictions.set_index(self.predictions['Dates'],inplace=True)
-        self.predictions.drop(['Dates'],axis = 1,inplace = True)
-        return self.predictions
-    
+        self.predictions = pd.DataFrame()
+        self.predictions['lower'] = en_lag9_model[0].predict(self.inp[['lstm', 'proph', 'lwr']])
+        self.predictions['result'] = en_lag9_model[1].predict(self.inp[['lstm', 'proph', 'lwr']])
+        self.predictions['upper'] = en_lag9_model[2].predict(self.inp[['lstm', 'proph', 'lwr']])
 
+        # self.predictions['lowLabel']=self.predictions.lower.apply(self.sense_val_inflow)
+        self.predictions['resultlabel'] = self.predictions.result.apply(self.sense_val_inflow)
+        # self.predictions['uplabel']=self.predictions.upper.apply(self.sense_val_inflow)
+        second = self.predictions['result'].values.reshape(self.predictions['result'].shape[0], 1)
+        secondlow = self.predictions['lower'].values.reshape(self.predictions['lower'].shape[0], 1)
+        secondup = self.predictions['upper'].values.reshape(self.predictions['upper'].shape[0], 1)
+        self.levelandstorage = self.getLevelAndStorage(self.predictionDate, second)
+        self.levelandstoragelow = self.getLevelAndStorage(self.predictionDate, secondlow)
+        self.levelandstorageup = self.getLevelAndStorage(self.predictionDate, secondup)
+        self.predictions['level(ft)'] = self.levelandstorage[:, 0]
+        self.predictions['storage(tmc)Low'] = self.levelandstoragelow[:, 1]
+        self.predictions['storage(tmc)'] = self.levelandstorage[:, 1]
+        self.predictions['storage(tmc)Up'] = self.levelandstorageup[:, 1]
+        self.predictions['Dates'] = self.predictionDate
+        self.predictions.set_index(self.predictions['Dates'], inplace=True)
+        self.predictions.drop(['Dates'], axis=1, inplace=True)
+        return self.predictions
 
 # In[ ]:
 
