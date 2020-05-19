@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Example</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="#"></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <a class="nav-item nav-link" href="#">Home</a>
+                    <a class="nav-item nav-link" href="#">Data</a>
+                    <a class="nav-item nav-link" href="#">Visualize</a>
+                    <a class="nav-item nav-link" href="#">About</a>
+                    
+                </div>
+            </div>
+        </nav>
+        <div class="container-fluid p-md-1 p-0 p-sm-0">
+            <div class='row'>
+                <div class='col-12'>
+
+                    <h3>Welcome</h3>
+                </div>
+
+            </div>
+            <div class="d-flex justify-content-center h-100">
+                <div class="shadow col-sm-12 col-12 col-md-8 p-0 p-sm-3 p-md-3 ">
+                    <div class="card-header py-3 d-flex flex-row m-1 align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold">Select a date for prediction</h6>
+                    </div>
+                    <div class="card-body p-0 p-md-3 p-sm-3">
+                        <form >
+                            <div class="switch switch--horizontal">
+                                <input id="radio-a" type="radio" name="first-switch" checked="checked"/>
+                                <label for="radio-a">Date</label>
+                                <input id="radio-b" type="radio" name="first-switch" value="two"/>
+                                <label for="radio-b">Range</label><span class="toggle-outside"><span class="toggle-inside"></span></span>
+                            </div>
+                            <div class='input-group'>
+                                <div class='col-md-12 col-12 col-sm-12' id='dateSelect'>
+                                    <div class='row'>
+                                        <div class='col-md-6 col-sm-6 col-6'>
+                                            <input id="datepicker" name='startdate'/>
+                                        </div>
+                                        <div class='col-md-6 col-sm-6 col-6' id='seconddate' style="display:none">
+                                            <input id="datepicker2" name="enddate" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class='input-group'>
+                                <div class="col-md-12 m-1">
+                                    <input type="submit" id='click' name="submit" class="btn btn-dark float-right" >
+                                </div>
+                            </div>
+                            <script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>
+                            <link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+                            <script>
+                                $("#datepicker").datepicker({format: 'yyyy-mm-dd',uiLibrary: "bootstrap4",maxDate:'2020-01-01',minDate:'2017-01-01'});
+                                $('#datepicker2').datepicker({ format: 'yyyy-mm-dd',uiLibrary: 'bootstrap4',maxDate:'2020-01-01',
+                                                              minDate:function(){
+                                                                  if($('#datepicker').val()==''){
+                                                                      return new Date('2019-12-31');
+                                                                  }
+                                                                  else
+                                                                      d=new Date($('#datepicker').val())
+                                                                  return new Date($('#datepicker').val())
+                                                              }
+                                                             });
+                            </script>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex h-100 justify-content-center mt-2">
+                <div class="shadow col-sm-9 col-12 col-md-9">
+                    <div  class='row'>
+                        <div class='col-12 m-1 justify-content-center ' id='output'></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
