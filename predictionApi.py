@@ -22,10 +22,112 @@ mpl.rcParams['legend.fontsize'] = 15
 @app.route('/', methods=['GET'])
 def home():
     return render_template('index.html')
+
+
+@app.route('/viz', methods=['GET'])
+def visualize():
+    return render_template('vizTemplate.html')
+
+@app.route('/harangi', methods=['GET'])
+def send_harangi():
+    return render_template('harangiTemplate.html')
+
+@app.route('/about', methods=['GET'])
+def send_about():
+    return render_template('aboutTemplate.html')
+
+
+@app.route('/viewRaw',methods=['GET','POST'])
+def rawData():
+    year = request.form.get('year', type=str)
+    month = request.form.get('month', type=str)
+    if (year == '*'):
+        ybegin, yend = 2011, 2019
+    else:
+        ybegin, yend = int(year), int(year)
+
+    if (month == '*'):
+        begin, end = 1, 12
+        figval = 2
+    elif (month == '1'):
+        begin, end = 6, 12
+        figval = 2
+    elif (month == '2'):
+        begin, end = 1, 5
+        figval = 1
+    inputFrame = pd.read_csv('./Datasets/nineYearHarangi.csv', header=0, parse_dates=True,
+                             index_col=0)
+    inputFrame=inputFrame.loc[(inputFrame.index.year >= ybegin)&(inputFrame.index.year <= yend)&(inputFrame.index.month >= begin)&(inputFrame.index.month <= end)]
+    inputFrame.index = inputFrame.index.astype(str)
+    ind = inputFrame.index.values
+    inputFrame = inputFrame.round(decimals=2)
+    temp = inputFrame.to_dict('records')
+    columnNames = inputFrame.columns.values
+    return render_template('rawdataTemplate.html', records=temp, colnames=columnNames, indexset=ind)
+
+@app.route('/visualize',methods=['GET','POST'])
+def showViz():
+    year = request.form.get('year',type=str)
+    month = request.form.get('month',type=str)
+    figdata_png = base64.b64encode(plot_viz_png(year,month).getvalue()).decode('ascii')
+    return render_template('imagetemplate.html',plot=True,name=figdata_png)
+
+def plot_viz_png(year,month):
+    fig = create_viz_figure(year,month)
+    output = io.BytesIO()
+    FigureCanvas(fig).print_png(output)
+    output.seek(0)
+    return output
+
+def create_viz_figure(year,month):
+    pd.plotting.register_matplotlib_converters()
+    if(year=='*'):
+        ybegin,yend=2011,2019
+    else:
+        ybegin,yend=int(year),int(year)
+
+    if (month == '*'):
+        begin, end = 1, 12
+        figval=2
+    elif (month == '1'):
+        begin, end = 6, 12
+        figval=2
+    elif (month == '2'):
+        begin, end = 1, 5
+        figval=1
+    inputFrame = pd.read_csv('./Datasets/nineYearHarangi.csv', header=0, parse_dates=True,
+                             index_col=0)
+    fig = Figure()
+
+    axis = fig.add_subplot(figval, 2, 1)
+    axis2 = fig.add_subplot(figval, 2, 2)
+    if(figval==1):
+        axis.set_ylabel('Cusecs')
+        axis2.set_ylabel('TMC')
+        inputFrame.loc[(inputFrame.index.year >= ybegin)&(inputFrame.index.year <= yend)&(inputFrame.index.month >= begin)&(inputFrame.index.month <= end)].plot(y=['Inflow'], ax=axis, legend=True)
+        inputFrame.loc[(inputFrame.index.year >= ybegin) & (inputFrame.index.year <= yend) & (inputFrame.index.month >= begin) & (inputFrame.index.month <= end)].plot(y=['Present Storage(TMC)'], ax=axis2, legend=True)
+    elif(figval==2):
+        axis.set_ylabel('Cusecs')
+        axis2.set_ylabel('Cusecs')
+        axis3 = fig.add_subplot(figval, 2, 3)
+        axis4  =fig.add_subplot(figval, 2, 4)
+        axis3.set_ylabel('TMC')
+        axis4.set_ylabel('Rain in mm')
+        inputFrame.loc[(inputFrame.index.year >= ybegin) & (inputFrame.index.year <= yend) & (inputFrame.index.month >= begin) & (
+                inputFrame.index.month <= end)].plot(y=['Inflow'], ax=axis, legend=True)
+        inputFrame.loc[(inputFrame.index.year >= ybegin) & (inputFrame.index.year <= yend) & (inputFrame.index.month >= begin) & (
+                inputFrame.index.month <= end)].plot(y=['Outflow'], ax=axis2, legend=True)
+        inputFrame.loc[(inputFrame.index.year >= ybegin) & (inputFrame.index.year <= yend) & (inputFrame.index.month >= begin) & (
+                inputFrame.index.month <= end)].plot(y=['Present Storage(TMC)'], ax=axis3, legend=True)
+        inputFrame.loc[(inputFrame.index.year >= ybegin) & (inputFrame.index.year <= yend) & (inputFrame.index.month >= begin) & (
+                inputFrame.index.month <= end)].plot(y=['MADIKERI','SOMWARPET','VIRAJPET'], ax=axis4, legend=True)
+    return fig
+
+
 @app.route('/predict',methods=['GET','POST'])
 def predictions():
     startDate = request.form.get('startdate',type=str)
-    print(startDate)
+    # print(startDate)
     model = EnsembledRegression(startDate)
     # print(type(request.args.get('enddate', type=str)), request.args.get('enddate', type=str))
     if(request.form.get('enddate',type=str)!=''):
@@ -48,7 +150,7 @@ def predictions():
     results = results.drop(columns=['storage(tmc)Up','storage(tmc)Low'])
     temp = results.to_dict('records')
     ind = results.index.values
-    columnNames = results.columns.values
+    columnNames = results.columns.values[:-1]
     # figdata_png = base64.b64encode(plot_png(startDate,endDate).getvalue()).decode('ascii')
 
     return render_template('tableTemplate.html', records=temp, colnames=columnNames,indexset=ind,plot=True, name=figdata_png)
@@ -85,7 +187,7 @@ def make_subplots(fig,up,low,axis,x,y,x1,y1,outputFrame,labelname):
     lo, up = min(np.concatenate((lower, y))), max(np.concatenate((upper, y)))
     axis.set_ylim([lo - (lo * .25), up + (up * .25)])
     axis.set_xticklabels(X, rotation=30)
-    print(X[:x.shape[0]], X[x.shape[0] - 1:])
+    # print(X[:x.shape[0]], X[x.shape[0] - 1:])
     axis.plot(X[:x.shape[0]], Y[:x.shape[0]], label=labelname, c='blue', marker='*')
     axis.plot(X[x.shape[0] - 1:], Y[x.shape[0] - 1:], c='red', marker='*', label='Prediction')
     axis.fill_between(X[x.shape[0] - 1:], upper, lower, facecolor='yellow', label='Interval')

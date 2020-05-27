@@ -1,0 +1,27 @@
+<style>
+
+tr{display:block;} 
+th, td{width:250px;}
+</style>
+<div class="table-responsive">
+    <table class="table table-sm">
+        <thead class="thead-dark ">
+            <tr>
+                <th scope="col">Date</th>
+                {% for col in colnames %}
+                <th scope="cols">{{ col }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody style="display:block; max-height:200px;overflow-y:scroll;">
+            {% for record in records %}
+            <tr>
+                <th scope="row">{{indexset[loop.index-1]}}</th>
+                {% for col in colnames %}
+                <td>{{ record[col] }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

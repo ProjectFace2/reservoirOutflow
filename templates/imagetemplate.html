@@ -1,1 +1,5 @@
-<img src={{name}} width=42 height=42/>
+<div id='images' class='justify-content-center'>
+    {% if plot %}
+    <img class="img-fluid" src="data:image/png;base64,{{name}}" style="margin-left:2em">
+    {% endif %}
+</div>

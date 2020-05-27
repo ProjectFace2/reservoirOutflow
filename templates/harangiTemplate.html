@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Harangi</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'></script>
+ <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+ <style>
+    .nav-link
+   {
+     font-size: large;
+   }
+</style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top bd-navbar">
+        <a class="navbar-brand" href="#"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <ul class="navbar-nav bd-navbar-nav mr-auto" style="font-weight: 500;">
+                <li class="nav-item">
+                    <a class=" nav-link " href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/viz">Visualize</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/harangi">Harangi</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/about">About</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav bd-navbar-nav flex-row " style="font-weight: 500;">
+                <li class="nav-item active ">
+                    <span class="text-light p-3"> v0.1.0 </span> 
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container-fluid p-md-1 p-0 p-sm-0">
+        <div class='row'>
+            <div class='col-12'>
+                
+                <h3>Harangi</h3>
+            </div>
+    
+        </div>
+        <div class="d-flex justify-content-center h-100">
+                <div class="shadow col-sm-12 col-12 col-md-8 p-0 p-sm-3 p-md-3 ">
+                    <div class="card-header py-3 d-flex flex-row m-1 align-items-center justify-content-between">
+                      <h6 class="m-0 font-weight-bold">Harangi River and Reservior</h6>
+                    </div>
+                    <div class="card-body p-0 p-md-3 p-sm-3">
+                        <div class="col">
+                            <div class="image-wrapper float-left w-50">
+                                <img class="img-fluid img-right " src="{{url_for('static', filename='images/map.jpg')}}" height="400px"/>
+                                
+                            </div>
+                            <div class="image-wrapper float-right w-50">
+                                <img class="img-fluid img-right " src="{{url_for('static', filename='images/harangidam.jpg')}}" height="400px" vspace=15px/>
+                                
+                            </div>
+                            
+                            <div class="single-post-content-wrapper">
+                            <p>Harangi river is one of the tributaries of Cauvery. This river originates at Pushpagiri Hills of Western Ghats.The estimate length of the river is approximately 50 Kms. It joins River Cauvery at Somwarpet Taluk.
+                            </p>
+                            <p>The reservoir for this river is built in Somwarpet Taluk called as Harangi Reservoir. The catchment areas for this reservoir covers all three taluks namely Somwarpet, Madikeri and Virajpet, which counts upto 58.5 Sq Km. Inflow into the reservoir is the consequence of the downpour in the catchment areas. </p>
+                            <p> The height of this reservoir is approximately  2,859 ft and its capacity is 8.07 TMC (93,402.77 Cusecs). 
+                                Generally the reservoir is fed, during the South West monsoon periods(i.e between June and November). The Annual Mean Discharge(i.e the outflow) is 1,130 million M.&#13221;</p>
+                            </div>
+                            <!-- <div class="image-wrapper float-left w-50">
+                                
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+</body>
+</html>

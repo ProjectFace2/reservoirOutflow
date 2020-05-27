@@ -14,9 +14,19 @@ body {
 table {
   text-align: center;
 }
+
+select:required:invalid {
+  color: gray;
+}
+option[value=""][disabled] {
+  display: none;
+}
+option {
+  color: black;
+}
 img{
   width:90%;
-  max-height:400px;
+  height:350px;
 }
 h1 {
   text-align: center;

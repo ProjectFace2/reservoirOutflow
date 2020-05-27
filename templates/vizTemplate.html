@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/viz.js') }}"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'></script>
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+   <style>
+    .nav-link
+   {
+     font-size: large;
+   }
+</style>
+    <title>Visualize</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top bd-navbar">
+        <a class="navbar-brand" href="#"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <ul class="navbar-nav bd-navbar-nav mr-auto" style="font-weight: 500;">
+                <li class="nav-item">
+                    <a class=" nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/viz">Visualize</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/harangi">Harangi</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/about">About</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav bd-navbar-nav flex-row " style="font-weight: 500;">
+                <li class="nav-item active ">
+                    <span class="text-light p-3"> v0.1.0 </span> 
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container-fluid p-md-1 p-0 p-sm-0">
+        <div class='row'>
+            <div class='col-12'>
+                
+                <h3>Data Viz</h3>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center h-100">
+            <div class="shadow col-sm-12 col-12 col-md-8 p-0 p-sm-3 p-md-3 ">
+                <div class="card-header py-3 d-flex flex-row m-1 align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold">Choose</h6>
+                </div>
+                <div class="card-body p-0 p-md-3 p-sm-3">
+                    <form>
+                        <div class="switch switch--horizontal">
+                            <input id="radio-a" type="radio" name="first-switch" checked="checked"/>
+                            <label for="radio-a">Raw</label>
+                            <input id="radio-b" type="radio" name="first-switch" value="two"/>
+                            <label for="radio-b">Graphical</label><span class="toggle-outside"><span class="toggle-inside"></span></span>
+                        </div>
+                        <div class='input-group'>
+                            <div class='col-md-12 col-12 col-sm-12' >
+                                <div class='row'>
+                                    <div class='col-md-6 col-sm-6 col-6'>
+                                        <select name="year" class="form-control" required >
+                                            <option value="" disabled selected>Year</option>
+                                            <option value="*">All</option>
+                                            <option value="2019">2019</option>
+                                            <option value="2018">2018</option>
+                                            <option value="2017">2017</option>
+                                            <option value="2016">2016</option>
+                                            <option value="2015">2015</option>
+                                            <option value="2014">2014</option>
+                                            <option value="2013">2013</option>
+                                            <option value="2012">2012</option>
+                                            <option value="2011">2011</option>
+                                          </select> 
+                                    </div>
+                                    <div class='col-md-6 col-sm-6 col-6'>
+                                        <select name="month" class="form-control" required >
+                                            <option value="" disabled selected>Month</option>
+                                            <option value="*">All</option>
+                                            <option value="1">Monsoon season</option>
+                                            <option value="2">Others</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='input-group'>
+                            <div class="col-md-12 m-1">
+                                <input type="submit" id='visualize' name="submit" class="btn btn-dark float-right" >
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div> 
+        <div class="d-flex justify-content-center h-100 mt-2">
+            <div class="shadow col-sm-11 col-12 col-md-11">
+                <div  class='row'>
+                    <div class='col-12 m-1 justify-content-center ' id='vizoutput'></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

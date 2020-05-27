@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>About</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'></script>
+ <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+ <style>
+    .nav-link
+   {
+     font-size: large;
+   }
+</style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top bd-navbar">
+        <a class="navbar-brand" href="#"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <ul class="navbar-nav bd-navbar-nav mr-auto" style="font-weight: 500;">
+                <li class="nav-item">
+                    <a class=" nav-link " href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/viz">Visualize</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " href="/harangi">Harangi</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/about">About</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav bd-navbar-nav flex-row " style="font-weight: 500;">
+                <li class="nav-item active ">
+                    <span class="text-light p-3"> v0.1.0 </span> 
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container-fluid p-md-1 p-0 p-sm-0">
+        <div class='row'>
+            <div class='col-12'>
+                
+                <h3>About Us</h3>
+            </div>
+    
+        </div>
+        <div class="d-flex justify-content-center h-100">
+                <div class="shadow col-sm-12 col-12 col-md-8 p-0 p-sm-3 p-md-3 ">
+                    <div class="card-header py-3 d-flex flex-row m-1 align-items-center justify-content-between">
+                      <h6 class="m-0 font-weight-bold">An attempt to manage floods</h6>
+                    </div>
+                    <div class="card-body p-0 p-md-3 p-sm-3">
+                        <div class="card" id="one">
+                            <div class="card-header" id="hd1">
+                                <h2 class="mb-2" >
+                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#coll2">
+                                        What is this project about?
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="coll2" class="collapse">
+                                <div class="card-body">
+                                    Machine Learning techniques are be applied to train the machine on weather reports and Dam flow control and capacity data and an attempt is made to provide an efficient control over Dam water level management for Harangi reservoir, Kodagu by providing daily predictions and hence creating a better alert systems in case of calamities.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card" id="two">
+                            <div class="card-header" id="hd1">
+                                <h2 class="mb-2" >
+                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#coll3">
+                                    How is weather data extracted, is it reliable?
+                
+                                  </button>
+                                </h2>
+                            </div>
+                            <div id="coll3" class="collapse">
+                                <div class="card-body">
+                                    Karnataka State Natural Disaster Monitor Center is Drought Monitoring Cell (DMC) established in 1988 as an institutional mechanism to monitor the Drought.  Activities broadened to also include monitoring other natural disasters and renamed as Karnataka State Natural Disaster Monitoring Centre (KSNDMC) in 2007. It also includes monitoring of other natural disasters viz., Floods, Hailstorms, Gale-Winds, Storm-surges, Earthquakes, Landslides, Tsunamis etc. KSNDMC prepares and disseminates Reports on Daily/Weekly/ Monthly/Seasonal and Annual at Hobli level and also provides Rainfall and Weather information at Gramapanchayath level. DataSet and daily data is extracted from official KSNDMC website. It verifies and validates it weather report on daily basis and considered a reliable source of data 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card" id="three">
+                            <div class="card-header" id="hd1">
+                                <h2 class="mb-2" >
+                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#coll4">
+                                    What next?
+                
+                                  </button>
+                                </h2>
+                            </div>
+                            <div id="coll4" class="collapse">
+                                <div class="card-body">
+                                    The model is trained only for Harangi reservoir but, in future versions an attempt wil be made to generalize the model to predict reservoir parameters for other reservoirs in Karnataka with the help of Karnataka State Natural Disaster Monitor Center(KSNDMC)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+</body>
+</html>

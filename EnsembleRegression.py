@@ -73,6 +73,53 @@ class EnsembledRegression:
             return 6
         elif(x > 22000):
              return 7
+
+
+    def generateOutflow(self, x):
+        max_water_in_cusecs = 93402.77
+        tmc = 11574.874
+        if x < max_water_in_cusecs and x > 82000:
+            crossing_offset_inflow = x - 82000
+            res = (crossing_offset_inflow) * .6
+            return 1, (crossing_offset_inflow) / tmc, res
+        elif x > max_water_in_cusecs:
+            crossing_offset_inflow = x - 82000
+            res = (crossing_offset_inflow) * .4
+            return 2, (crossing_offset_inflow) / tmc, res
+        else:
+            return 0, 0, 0
+
+    def outflow_provider(self, inflow, date, tmc=11574.874):
+        inputFrame = pd.read_csv('./Datasets/nineYearHarangi.csv', header=0, parse_dates=True,index_col=0)
+
+        if isinstance(date, np.datetime64):
+            startdate = np.datetime64(date) - 2
+            enddate = np.datetime64(date) - 1
+        else:
+            startdate = np.datetime64(date[0].date()) - 2
+            enddate = np.datetime64(date[date.shape[0] - 1].date()) - 1
+        unScaledinputSet = inputFrame.loc[startdate:enddate].copy()
+        dataset = unScaledinputSet.iloc[:, :4]
+        number = series_to_supervised(np.vstack((dataset.values, np.zeros(4))), 2, 0)
+        number['Dates'] = date
+        number = number.set_index(number['Dates'])
+        number = number.drop(columns='Dates')
+        max_water_in_cusecs = 93402.77
+        max_in_feet = 2859
+        max_in_tmc = 8.07
+        tmc_inflow = number.iloc[:, -4:-3]
+        dam_height = number.iloc[:, -3:-2]
+        inflow_into_dam = tmc_inflow * tmc
+        inflow_today = pd.DataFrame(inflow_into_dam['var1(t-1)'].values + inflow.values)
+        inflow_today['Dates'] = date
+        inflow_today = inflow_today.set_index(inflow_today['Dates'])
+        inflow_today = inflow_today.drop(columns='Dates')
+        inflow_today['state'] = inflow_today[0].apply(lambda x: self.generateOutflow(x)[0])
+        inflow_today['excess(tmc)'] = inflow_today[0].apply(lambda x: self.generateOutflow(x)[1])
+        inflow_today['outlet'] = inflow_today[0].apply(lambda x: self.generateOutflow(x)[2])
+        return inflow_today.drop(columns=[0])
+
+
     def predict(self, startDate=None,endDate=None):
         
         '''based on query set ,and given date range predicts result for given date with multiple models and returns ensembled result 
@@ -144,6 +191,10 @@ class EnsembledRegression:
         self.predictions['Dates'] = self.predictionDate
         self.predictions.set_index(self.predictions['Dates'], inplace=True)
         self.predictions.drop(['Dates'], axis=1, inplace=True)
+        self.outflowSuggestion = self.outflow_provider(self.predictions.result, self.predictionDate)
+        self.predictions['Excess(tmc)'] = self.outflowSuggestion['excess(tmc)']
+        self.predictions['Suggested Outflow'] = self.outflowSuggestion['outlet']
+        self.predictions['out Status'] = self.outflowSuggestion['state']
         return self.predictions
 
 # In[ ]:
